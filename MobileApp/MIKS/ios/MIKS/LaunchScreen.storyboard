@@ -16,23 +16,30 @@
                         <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" ambiguous="YES" misplaced="YES" text="Copyright © 2023 Infocare Technologies Private Limited. All rights reserved." textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lxe-y8-QkG">
-                                <rect key="frame" x="16" y="614" width="343" height="21"/>
+                            <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Copyright © 2023 Infocare Technologies Private Limited. All rights reserved." textAlignment="center" lineBreakMode="wordWrap" baselineAdjustment="alignBaselines" minimumFontSize="7" adjustsFontForContentSizeCategory="YES" translatesAutoresizingMaskIntoConstraints="NO" id="lxe-y8-QkG">
+                                <rect key="frame" x="16" y="626" width="343" height="21"/>
+                                <accessibility key="accessibilityConfiguration">
+                                    <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
+                                    <bool key="isElement" value="NO"/>
+                                </accessibility>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="21" id="m84-mk-aZW"/>
+                                </constraints>
                                 <fontDescription key="fontDescription" style="UICTFontTextStyleFootnote"/>
                                 <color key="textColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                                 <nil key="highlightedColor"/>
                             </label>
-                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFit" horizontalHuggingPriority="251" verticalHuggingPriority="251" misplaced="YES" image="Splash" translatesAutoresizingMaskIntoConstraints="NO" id="3ML-d5-G5g">
-                                <rect key="frame" x="16" y="87" width="343" height="493"/>
+                            <imageView clipsSubviews="YES" userInteractionEnabled="NO" contentMode="scaleAspectFill" horizontalHuggingPriority="251" verticalHuggingPriority="251" image="Splash" id="sfO-KM-64g">
+                                <rect key="frame" x="0.0" y="67" width="375" height="533"/>
+                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
                             </imageView>
                         </subviews>
                         <viewLayoutGuide key="safeArea" id="Bcu-3y-fUS"/>
                         <color key="backgroundColor" white="0.0" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
                         <constraints>
-                            <constraint firstItem="3ML-d5-G5g" firstAttribute="leading" secondItem="Bcu-3y-fUS" secondAttribute="leading" id="0lN-BU-mEc"/>
-                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="trailing" secondItem="3ML-d5-G5g" secondAttribute="trailing" id="RMp-mt-EW9"/>
-                            <constraint firstItem="lxe-y8-QkG" firstAttribute="top" secondItem="3ML-d5-G5g" secondAttribute="bottom" id="fu0-aN-ha1"/>
-                            <constraint firstItem="3ML-d5-G5g" firstAttribute="top" secondItem="Bcu-3y-fUS" secondAttribute="top" id="m9g-1Y-6wr"/>
+                            <constraint firstItem="lxe-y8-QkG" firstAttribute="trailing" secondItem="Ze5-6b-2t3" secondAttribute="trailingMargin" id="0kR-7s-aFQ"/>
+                            <constraint firstItem="Bcu-3y-fUS" firstAttribute="bottom" secondItem="lxe-y8-QkG" secondAttribute="bottom" constant="20" id="Ozy-q2-bew"/>
+                            <constraint firstItem="lxe-y8-QkG" firstAttribute="leading" secondItem="Ze5-6b-2t3" secondAttribute="leadingMargin" id="qqF-c0-ucc"/>
                         </constraints>
                     </view>
                 </viewController>
