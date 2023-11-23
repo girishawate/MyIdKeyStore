@@ -10,25 +10,25 @@ const initializeDatabase = async () => {
         await db.transaction(async (tx) => {
             // Create the 'Category' table
             await tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS Category (CatId INTEGER PRIMARY KEY AUTOINCREMENT, CatCode TEXT, CatDesc TEXT, CatActive INTEGER)',
+                'CREATE TABLE IF NOT EXISTS Category (CatId INTEGER PRIMARY KEY, CatCode TEXT, CatDesc TEXT, CatActive INTEGER)',
                 []
             );
 
             // Create the 'CategoryDetails' table
             await tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS CategoryDetails (CDId INTEGER PRIMARY KEY AUTOINCREMENT, CDCatCode TEXT, CDFieldLabel TEXT, CDFieldType TEXT, CDFieldActive INTEGER)',
+                'CREATE TABLE IF NOT EXISTS CategoryDetails (CDId INTEGER PRIMARY KEY, CDCatCode TEXT, CDFieldLabel TEXT, CDFieldType TEXT, CDFieldActive INTEGER)',
                 []
             );
 
             // Create the 'KeyValueHeader' table
             await tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS KeyValueHeader (KVId INTEGER PRIMARY KEY AUTOINCREMENT, KVDocName TEXT, KVCatCode TEXT, KVCatDesc TEXT, KVSearchTags TEXT)',
+                'CREATE TABLE IF NOT EXISTS KeyValueHeader (KVId INTEGER PRIMARY KEY, KVDocName TEXT, KVCatCode TEXT, KVCatDesc TEXT, KVSearchTags TEXT)',
                 []
             );
 
             // Create the 'KeyValueDetails' table
             await tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS KeyValueDetails (KVDId INTEGER PRIMARY KEY AUTOINCREMENT, KVDKVId INTEGER, KVDCatFieldName TEXT, KVDCatFieldType TEXT, KVDFieldValue TEXT)',
+                'CREATE TABLE IF NOT EXISTS KeyValueDetails (KVDId INTEGER PRIMARY KEY, KVDKVId INTEGER, KVDCatFieldName TEXT, KVDCatFieldType TEXT, KVDFieldValue TEXT)',
                 []
             );
         });
@@ -272,6 +272,70 @@ const deleteKeyValueDetails = async (kvdId: number): Promise<void> => {
     }
 };
 
+const searchKeyValues = async (searchTerm: string): Promise<KeyValueHeader[]> => {
+    try {
+        if (db) {
+            const results = await db.executeSql(
+                'SELECT * FROM KeyValue WHERE KVDocName LIKE ? OR KVSearchTags LIKE ?',
+                [`%${searchTerm}%`, `%${searchTerm}%`]
+            );
+
+            const keyValues: KeyValueHeader[] = [];
+
+            for (let i = 0; i < results[0].rows.length; i++) {
+                const row = results[0].rows.item(i) as KeyValueHeader; // Ensure the correct type
+                keyValues.push(row);
+            }
+
+            return keyValues;
+        } else {
+            console.error('Database not initialized');
+            return [];
+        }
+    } catch (error) {
+        console.error('Error searching KeyValues:', error);
+        return [];
+    }
+};
+
+const getKeyValueWithDetails = async (kvId: number): Promise<KeyValueHeader | null> => {
+    try {
+        if (db) {
+            const results = await db.executeSql(
+                `
+        SELECT KeyValueHeader.*, KeyValueDetails.*
+        FROM KeyValueHeader
+        LEFT JOIN KeyValueDetails ON KeyValueHeader.KVId = KeyValueDetails.KVDKVId
+        WHERE KeyValueHeader.KVId = ?
+        `,
+                [kvId]
+            );
+
+            if (results[0].rows.length > 0) {
+                const keyValue: KeyValueHeader = results[0].rows.item(0) as KeyValueHeader;
+                const keyValueDetails: KeyValueDetails[] = [];
+
+                for (let i = 0; i < results[0].rows.length; i++) {
+                    const row = results[0].rows.item(i) as KeyValueDetails; // Ensure the correct type
+                    keyValueDetails.push(row);
+                }
+
+                keyValue.details = keyValueDetails; // Assuming you have a property named 'details' on KeyValue to store KeyValueDetails
+
+                return keyValue;
+            } else {
+                return null; // No record found
+            }
+        } else {
+            console.error('Database not initialized');
+            return null;
+        }
+    } catch (error) {
+        console.error('Error fetching KeyValue with details:', error);
+        return null;
+    }
+};
+
 export {
     initializeDatabase,
     insertCategory,
@@ -286,4 +350,6 @@ export {
     insertKeyValueDetails,
     updateKeyValueDetails,
     deleteKeyValueDetails,
+    searchKeyValues,
+    getKeyValueWithDetails,
 };

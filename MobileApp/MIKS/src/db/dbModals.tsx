@@ -20,6 +20,7 @@ export interface KeyValueHeader {
     KVCatCode: string;
     KVCatDesc: string;
     KVSearchTags: string;
+    details: KeyValueDetails[]; // Its in interface and not in the table. Used like JSON object for code purpose
 }
 
 export interface KeyValueDetails {
