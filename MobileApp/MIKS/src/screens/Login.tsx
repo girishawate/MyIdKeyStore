@@ -1,25 +1,25 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, Button } from 'react-native';
 
-interface RegistrationProps {
-    onRegistration: (username: string, password: string) => Promise<void>;
+interface LoginProps {
+    onLogin: (username: string, password: string) => Promise<void>;
     // ... other necessary props
 }
 
-const Registration: React.FC<RegistrationProps> = ({ onRegistration }) => {
+const Login: React.FC<LoginProps> = ({ onLogin }) => {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
 
-    const handleRegistration = async () => {
+    const handleLogin = async () => {
         // Perform any validation if needed
 
-        // Call the onRegistration prop with the provided credentials
-        await onRegistration(username, password);
+        // Call the onLogin prop with the provided credentials
+        await onLogin(username, password);
     };
 
     return (
         <View>
-            <Text>Registration Screen</Text>
+            <Text>Login Screen</Text>
             <TextInput
                 placeholder="Username"
                 value={username}
@@ -31,9 +31,9 @@ const Registration: React.FC<RegistrationProps> = ({ onRegistration }) => {
                 onChangeText={(text) => setPassword(text)}
                 secureTextEntry
             />
-            <Button title="Register" onPress={handleRegistration} />
+            <Button title="Login" onPress={handleLogin} />
         </View>
     );
 };
 
-export default Registration;
+export default Login;

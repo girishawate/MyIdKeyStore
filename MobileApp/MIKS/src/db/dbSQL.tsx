@@ -8,6 +8,12 @@ const initializeDatabase = async () => {
     try {
         db = await SQLite.openDatabase({ name: 'mydatabase.db', location: 'default' });
         await db.transaction(async (tx) => {
+            // Create the 'User' table
+            await tx.executeSql(
+                'CREATE TABLE IF NOT EXISTS User (userId INTEGER PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL)',
+                []
+            );
+
             // Create the 'Category' table
             await tx.executeSql(
                 'CREATE TABLE IF NOT EXISTS Category (CatId INTEGER PRIMARY KEY, CatCode TEXT, CatDesc TEXT, CatActive INTEGER)',
@@ -34,6 +40,44 @@ const initializeDatabase = async () => {
         });
     } catch (error) {
         console.error('Error initializing database:', error);
+    }
+};
+
+const registerUser = async (userId: number, username: string, password: string): Promise<boolean> => {
+    try {
+        if (db) {
+            await db.executeSql('INSERT INTO User (userId, username, password) VALUES (?, ?, ?)', [
+                userId,
+                username,
+                password,
+            ]);
+            return true;
+        } else {
+            console.error('Database not initialized');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error registering user:', error);
+        return false;
+    }
+};
+
+const loginUser = async (username: string, password: string): Promise<boolean> => {
+    try {
+        if (db) {
+            const results = await db.executeSql(
+                'SELECT * FROM User WHERE username = ? AND password = ?',
+                [username, password]
+            );
+
+            return results[0].rows.length > 0;
+        } else {
+            console.error('Database not initialized');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error logging in:', error);
+        return false;
     }
 };
 
@@ -338,6 +382,8 @@ const getKeyValueWithDetails = async (kvId: number): Promise<KeyValueHeader | nu
 
 export {
     initializeDatabase,
+    registerUser,
+    loginUser,
     insertCategory,
     updateCategory,
     deleteCategory,
