@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { StyleSheet, View, Text, ScrollView, SafeAreaView } from 'react-native';
 
-const ExportData = () => {
+const ExportImportData = () => {
     return (
         <SafeAreaView style={styles.container}>
             <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
@@ -21,4 +21,4 @@ const styles = StyleSheet.create({
     }
 });
 
-export default ExportData;
+export default ExportImportData;

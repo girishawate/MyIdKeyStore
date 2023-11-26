@@ -7,7 +7,7 @@ import Login from './screens/Login';
 import Home from './screens/Home';
 import KeyValueMaster from './screens/KeyValueMaster';
 import KeyValueSearch from './screens/KeyValueSearch';
-import ExportData from './screens/ExportData';
+import ExportImportData from './screens/ExportImportData';
 
 import { initializeDatabase, registerUser, loginUser } from './db/dbSQL';
 
@@ -44,7 +44,7 @@ function App() {
         <Stack.Screen name="Home" component={Home} />
         <Stack.Screen name="KeyValueMaster" component={KeyValueMaster} />
         <Stack.Screen name="KeyValueSearch" component={KeyValueSearch} />
-        <Stack.Screen name="ExportData" component={ExportData} />
+        <Stack.Screen name="ExportImportData" component={ExportImportData} />
       </Stack.Navigator>
     </NavigationContainer>
   );
