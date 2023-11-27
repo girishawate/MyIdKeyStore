@@ -6,7 +6,7 @@ let db: SQLiteDatabase | null = null;
 
 const initializeDatabase = async () => {
     try {
-        db = await SQLite.openDatabase({ name: 'mydatabase.db', location: 'default' });
+        db = await SQLite.openDatabase({ name: 'miks.db', location: 'default' });
         await db.transaction(async (tx) => {
             // Create the 'User' table
             await tx.executeSql(
@@ -40,6 +40,22 @@ const initializeDatabase = async () => {
         });
     } catch (error) {
         console.error('Error initializing database:', error);
+    }
+};
+
+const checkIfUserRegistered = async (): Promise<boolean> => {
+    try {
+        if (db) {
+            const results = await db.executeSql('SELECT * FROM User LIMIT 1', []);
+
+            return results[0].rows.length > 0;
+        } else {
+            console.error('Database not initialized');
+            return false;
+        }
+    } catch (error) {
+        console.error('Error checking if user is registered:', error);
+        return false;
     }
 };
 
@@ -382,6 +398,7 @@ const getKeyValueWithDetails = async (kvId: number): Promise<KeyValueHeader | nu
 
 export {
     initializeDatabase,
+    checkIfUserRegistered,
     registerUser,
     loginUser,
     insertCategory,

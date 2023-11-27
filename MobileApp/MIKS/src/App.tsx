@@ -9,7 +9,7 @@ import KeyValueMaster from './screens/KeyValueMaster';
 import KeyValueSearch from './screens/KeyValueSearch';
 import ExportImportData from './screens/ExportImportData';
 
-import { initializeDatabase, registerUser, loginUser } from './db/dbSQL';
+import { initializeDatabase, checkIfUserRegistered, registerUser, loginUser } from './db/dbSQL';
 
 const Stack = createNativeStackNavigator();
 
@@ -20,6 +20,14 @@ function App() {
   React.useEffect(() => {
     // Check if the Users table exists when the app starts
     initializeDatabase();
+
+    // Check if the user is already registered
+    const checkRegistrationStatus = async () => {
+      const userRegistered = await checkIfUserRegistered();
+      setIsRegistered(userRegistered);
+    };
+
+    checkRegistrationStatus();
   }, []);
 
   const handleRegistration = async (username: string, password: string) => {
