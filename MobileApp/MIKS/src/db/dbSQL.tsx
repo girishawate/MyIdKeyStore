@@ -45,14 +45,12 @@ const initializeDatabase = async () => {
 
 const checkIfUserRegistered = async (): Promise<boolean> => {
     try {
-        if (db) {
-            const results = await db.executeSql('SELECT * FROM User LIMIT 1', []);
-
-            return results[0].rows.length > 0;
-        } else {
+        if (!db) {
             console.error('Database not initialized');
             return false;
         }
+        const results = await db.executeSql('SELECT * FROM User LIMIT 1', []);
+        return results[0].rows.length > 0;
     } catch (error) {
         console.error('Error checking if user is registered:', error);
         return false;

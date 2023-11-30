@@ -19,15 +19,14 @@ function App() {
 
   React.useEffect(() => {
     // Check if the Users table exists when the app starts
-    initializeDatabase();
-
-    // Check if the user is already registered
-    const checkRegistrationStatus = async () => {
+    const initDatabase = async () => {
+      await initializeDatabase(); // Await the initialization process
+      // Check if the user is already registered
       const userRegistered = await checkIfUserRegistered();
       setIsRegistered(userRegistered);
     };
 
-    checkRegistrationStatus();
+    initDatabase();
   }, []);
 
   const handleRegistration = async (username: string, password: string) => {
