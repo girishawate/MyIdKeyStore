@@ -4,61 +4,115 @@ import { Category, CategoryDetails, KeyValueHeader, KeyValueDetails } from './db
 
 let db: SQLiteDatabase | null = null;
 
-const initializeDatabase = async () => {
-    try {
-        db = await SQLite.openDatabase({ name: 'miks.db', location: 'default' });
-        await db.transaction(async (tx) => {
-            // Create the 'User' table
-            await tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS User (userId INTEGER PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL)',
-                []
-            );
+const initializeDatabase = (): Promise<SQLiteDatabase | null> => {
+    return new Promise((resolve, reject) => {
+        if (db) {
+            resolve(db);
+        } else {
+            SQLite.openDatabase({ name: 'miks.db', location: 'default' }, (database) => {
+                db = database;
+                db.transaction(
+                    (tx) => {
+                        // Example: Create the 'User' table
+                        tx.executeSql(
+                            'CREATE TABLE IF NOT EXISTS User (userId INTEGER PRIMARY KEY, username TEXT NOT NULL, password TEXT NOT NULL)',
+                            [],
+                            () => {
+                                resolve(db);
+                            },
+                            (_, error) => {
+                                console.error('Error creating User table:', error);
+                                reject(null);
+                            }
+                        );
+                        // Create the 'Category' table
+                        tx.executeSql(
+                            'CREATE TABLE IF NOT EXISTS Category (CatId INTEGER PRIMARY KEY, CatCode TEXT, CatDesc TEXT, CatActive INTEGER)',
+                            [],
+                            () => {
+                                resolve(db);
+                            },
+                            (_, error) => {
+                                console.error('Error creating User table:', error);
+                                reject(null);
+                            }
+                        );
 
-            // Create the 'Category' table
-            await tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS Category (CatId INTEGER PRIMARY KEY, CatCode TEXT, CatDesc TEXT, CatActive INTEGER)',
-                []
-            );
+                        // Create the 'CategoryDetails' table
+                        tx.executeSql(
+                            'CREATE TABLE IF NOT EXISTS CategoryDetails (CDId INTEGER PRIMARY KEY, CDCatCode TEXT, CDFieldLabel TEXT, CDFieldType TEXT, CDFieldActive INTEGER)',
+                            [],
+                            () => {
+                                resolve(db);
+                            },
+                            (_, error) => {
+                                console.error('Error creating User table:', error);
+                                reject(null);
+                            }
+                        );
 
-            // Create the 'CategoryDetails' table
-            await tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS CategoryDetails (CDId INTEGER PRIMARY KEY, CDCatCode TEXT, CDFieldLabel TEXT, CDFieldType TEXT, CDFieldActive INTEGER)',
-                []
-            );
+                        // Create the 'KeyValueHeader' table
+                        tx.executeSql(
+                            'CREATE TABLE IF NOT EXISTS KeyValueHeader (KVId INTEGER PRIMARY KEY, KVDocName TEXT, KVCatCode TEXT, KVCatDesc TEXT, KVSearchTags TEXT)',
+                            [],
+                            () => {
+                                resolve(db);
+                            },
+                            (_, error) => {
+                                console.error('Error creating User table:', error);
+                                reject(null);
+                            }
+                        );
 
-            // Create the 'KeyValueHeader' table
-            await tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS KeyValueHeader (KVId INTEGER PRIMARY KEY, KVDocName TEXT, KVCatCode TEXT, KVCatDesc TEXT, KVSearchTags TEXT)',
-                []
-            );
-
-            // Create the 'KeyValueDetails' table
-            await tx.executeSql(
-                'CREATE TABLE IF NOT EXISTS KeyValueDetails (KVDId INTEGER PRIMARY KEY, KVDKVId INTEGER, KVDCatFieldName TEXT, KVDCatFieldType TEXT, KVDFieldValue TEXT)',
-                []
-            );
-        });
-    } catch (error) {
-        console.error('Error initializing database:', error);
-    }
+                        // Create the 'KeyValueDetails' table
+                        tx.executeSql(
+                            'CREATE TABLE IF NOT EXISTS KeyValueDetails (KVDId INTEGER PRIMARY KEY, KVDKVId INTEGER, KVDCatFieldName TEXT, KVDCatFieldType TEXT, KVDFieldValue TEXT)',
+                            [],
+                            () => {
+                                resolve(db);
+                            },
+                            (_, error) => {
+                                console.error('Error creating User table:', error);
+                                reject(null);
+                            }
+                        );
+                    },
+                    (error) => {
+                        reject(error);
+                    }
+                );
+            });
+        }
+    });
 };
 
 const checkIfUserRegistered = async (): Promise<boolean> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
         if (!db) {
             console.error('Database not initialized');
             return false;
         }
+
         const results = await db.executeSql('SELECT * FROM User LIMIT 1', []);
-        return results[0].rows.length > 0;
+
+        return results[0]?.rows?.length > 0;
     } catch (error) {
-        console.error('Error checking if user is registered:', error);
+        console.error('Error checking if User is registered:', error);
         return false;
     }
 };
 
 const registerUser = async (userId: number, username: string, password: string): Promise<boolean> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return false;
+        }
+
         if (db) {
             await db.executeSql('INSERT INTO User (userId, username, password) VALUES (?, ?, ?)', [
                 userId,
@@ -78,6 +132,13 @@ const registerUser = async (userId: number, username: string, password: string):
 
 const loginUser = async (username: string, password: string): Promise<boolean> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return false;
+        }
+
         if (db) {
             const results = await db.executeSql(
                 'SELECT * FROM User WHERE username = ? AND password = ?',
@@ -97,6 +158,13 @@ const loginUser = async (username: string, password: string): Promise<boolean> =
 
 const insertCategory = async (category: Category): Promise<number | undefined> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             const anyResult: any = await db.transaction(async (tx) => {
                 const [, resultSet] = await tx.executeSql(
@@ -118,6 +186,13 @@ const insertCategory = async (category: Category): Promise<number | undefined> =
 
 const updateCategory = async (category: Category): Promise<void> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             await db.transaction(async (tx) => {
                 await tx.executeSql(
@@ -135,6 +210,13 @@ const updateCategory = async (category: Category): Promise<void> => {
 
 const deleteCategory = async (catId: number): Promise<void> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             await db.transaction(async (tx) => {
                 await tx.executeSql('DELETE FROM Category WHERE CatId = ?', [catId]);
@@ -149,6 +231,13 @@ const deleteCategory = async (catId: number): Promise<void> => {
 
 const insertCategoryDetails = async (categoryDetails: CategoryDetails): Promise<number | undefined> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             const anyResult: any = await db.transaction(async (tx) => {
                 const [, resultSet] = await tx.executeSql(
@@ -171,6 +260,13 @@ const insertCategoryDetails = async (categoryDetails: CategoryDetails): Promise<
 
 const updateCategoryDetails = async (categoryDetails: CategoryDetails): Promise<void> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             await db.transaction(async (tx) => {
                 await tx.executeSql(
@@ -188,6 +284,13 @@ const updateCategoryDetails = async (categoryDetails: CategoryDetails): Promise<
 
 const deleteCategoryDetails = async (cdId: number): Promise<void> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             await db.transaction(async (tx) => {
                 await tx.executeSql('DELETE FROM CategoryDetails WHERE CDId = ?', [cdId]);
@@ -202,6 +305,13 @@ const deleteCategoryDetails = async (cdId: number): Promise<void> => {
 
 const insertKeyValueHeader = async (keyValueHeader: KeyValueHeader): Promise<number | undefined> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             const anyResult: any = await db.transaction(async (tx) => {
                 const [, resultSet] = await tx.executeSql(
@@ -230,6 +340,13 @@ const insertKeyValueHeader = async (keyValueHeader: KeyValueHeader): Promise<num
 
 const updateKeyValueHeader = async (keyValueHeader: KeyValueHeader): Promise<void> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             await db.transaction(async (tx) => {
                 await tx.executeSql(
@@ -253,6 +370,13 @@ const updateKeyValueHeader = async (keyValueHeader: KeyValueHeader): Promise<voi
 
 const deleteKeyValueHeader = async (kvId: number): Promise<void> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             await db.transaction(async (tx) => {
                 await tx.executeSql('DELETE FROM KeyValueHeader WHERE KVId = ?', [kvId]);
@@ -267,6 +391,13 @@ const deleteKeyValueHeader = async (kvId: number): Promise<void> => {
 
 const insertKeyValueDetails = async (keyValueDetails: KeyValueDetails): Promise<number | undefined> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             const anyResult: any = await db.transaction(async (tx) => {
                 const [, resultSet] = await tx.executeSql(
@@ -295,6 +426,13 @@ const insertKeyValueDetails = async (keyValueDetails: KeyValueDetails): Promise<
 
 const updateKeyValueDetails = async (keyValueDetails: KeyValueDetails): Promise<void> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             await db.transaction(async (tx) => {
                 await tx.executeSql(
@@ -318,6 +456,13 @@ const updateKeyValueDetails = async (keyValueDetails: KeyValueDetails): Promise<
 
 const deleteKeyValueDetails = async (kvdId: number): Promise<void> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             await db.transaction(async (tx) => {
                 await tx.executeSql('DELETE FROM KeyValueDetails WHERE KVDId = ?', [kvdId]);
@@ -332,6 +477,13 @@ const deleteKeyValueDetails = async (kvdId: number): Promise<void> => {
 
 const searchKeyValues = async (searchTerm: string): Promise<KeyValueHeader[]> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return;
+        }
+
         if (db) {
             const results = await db.executeSql(
                 'SELECT * FROM KeyValue WHERE KVDocName LIKE ? OR KVSearchTags LIKE ?',
@@ -358,14 +510,19 @@ const searchKeyValues = async (searchTerm: string): Promise<KeyValueHeader[]> =>
 
 const getKeyValueWithDetails = async (kvId: number): Promise<KeyValueHeader | null> => {
     try {
+        // Ensure that the database is initialized
+        const db = await initializeDatabase();
+        if (!db) {
+            console.error('Database not initialized');
+            return null;
+        }
+
         if (db) {
             const results = await db.executeSql(
-                `
-        SELECT KeyValueHeader.*, KeyValueDetails.*
-        FROM KeyValueHeader
-        LEFT JOIN KeyValueDetails ON KeyValueHeader.KVId = KeyValueDetails.KVDKVId
-        WHERE KeyValueHeader.KVId = ?
-        `,
+                `SELECT KeyValueHeader.*, KeyValueDetails.*
+                FROM KeyValueHeader
+                LEFT JOIN KeyValueDetails ON KeyValueHeader.KVId = KeyValueDetails.KVDKVId
+                WHERE KeyValueHeader.KVId = ?`,
                 [kvId]
             );
 
