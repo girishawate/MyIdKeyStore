@@ -1,10 +1,15 @@
-import SQLite, { SQLiteDatabase } from 'react-native-sqlite-storage';
+import { openDatabase } from 'react-native-sqlite-storage';
 
 import { Category, CategoryDetails, KeyValueHeader, KeyValueDetails } from './dbModals';
 
-let db: SQLiteDatabase | null = null;
+const sqldb = openDatabase({ name: 'miks.db', location: 'default' });
 
-const initializeDatabase = (): Promise<SQLiteDatabase | null> => {
+const initDB = () => {
+
+
+}
+
+/* const initializeDatabase = (): Promise<SQLiteDatabase | null> => {
     return new Promise((resolve, reject) => {
         if (db) {
             resolve(db);
@@ -85,6 +90,7 @@ const initializeDatabase = (): Promise<SQLiteDatabase | null> => {
         }
     });
 };
+ */
 
 const checkIfUserRegistered = async (): Promise<boolean> => {
     try {
@@ -552,7 +558,10 @@ const getKeyValueWithDetails = async (kvId: number): Promise<KeyValueHeader | nu
 };
 
 export {
-    initializeDatabase,
+    sqldb,
+    initDB,
+
+    //    initializeDatabase,
     checkIfUserRegistered,
     registerUser,
     loginUser,

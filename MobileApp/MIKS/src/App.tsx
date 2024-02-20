@@ -9,7 +9,7 @@ import KeyValueMaster from './screens/KeyValueMaster';
 import KeyValueSearch from './screens/KeyValueSearch';
 import ExportImportData from './screens/ExportImportData';
 
-import { initializeDatabase, checkIfUserRegistered, registerUser, loginUser } from './db/dbSQL';
+import { sqldb, initDB, checkIfUserRegistered } from './db/dbSQL';
 
 const Stack = createNativeStackNavigator();
 
